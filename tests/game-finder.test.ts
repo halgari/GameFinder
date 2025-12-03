@@ -21,8 +21,17 @@ describe('findAllGames', () => {
   it('should accept stores option to filter which stores to search', async () => {
     const result = await findAllGames({ stores: ['steam'] });
 
-    // Should only have searched steam, so skipped should not include steam
-    expect(result.skipped).not.toContain('steam');
+    // Should only have searched steam, so other stores should not appear anywhere
+    const allStoresInResult = [
+      ...result.games.map((g) => g.store),
+      ...result.skipped,
+      ...result.errors.keys(),
+    ];
+
+    // Only steam should be in results (either as games, skipped, or error)
+    for (const store of allStoresInResult) {
+      expect(store).toBe('steam');
+    }
   });
 
   it('should skip unavailable stores by default', async () => {
